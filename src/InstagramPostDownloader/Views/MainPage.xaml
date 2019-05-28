@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="InstagramPostDownloader.Views.MainPage"
+             xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             mc:Ignorable="d">
+
+    <StackLayout>
+        <Editor Margin="0,15,0,0" Placeholder="Insert instagram post url" Text="{Binding PostUrl}" AutoSize="TextChanges">
+            <Editor.Behaviors>
+                <b:EventToCommandBehavior EventName="Focused" Command="{Binding EditorOnFocusedCommand}">
+                </b:EventToCommandBehavior>
+            </Editor.Behaviors>
+        </Editor>
+        <Button Text="Download" Command="{Binding DownloadCommand}" />
+        <FlexLayout JustifyContent="SpaceBetween" Padding="0">
+            <Label Text="{Binding Status}" FontAttributes="Bold" Margin="5,10,0,0" />
+            <ActivityIndicator IsRunning="{Binding IsDownloadingFile}" Color="#26C431" Margin="0,0,5,0" />
+        </FlexLayout>
+        <WebView x:Name="webView" Source="{Binding PostUrl}" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <WebView.Behaviors>
+                <b:EventToCommandBehavior EventName="Navigated" Command="{Binding WebViewOnNavigatedCommand}"
+                                          CommandParameter="{Binding Source={x:Reference webView}}" />
+            </WebView.Behaviors>
+        </WebView>
+    </StackLayout>
+
+</ContentPage>
