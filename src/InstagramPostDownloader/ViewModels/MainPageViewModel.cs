@@ -21,6 +21,7 @@ namespace InstagramPostDownloader.ViewModels
         private string _status;
         private string _innerBody;
         private bool _isDownloadingFile;
+        private bool _foundFileToDownload;
         private readonly HtmlParser _parser;
         private readonly WebClient _webClient;
 
@@ -48,38 +49,48 @@ namespace InstagramPostDownloader.ViewModels
             DownloadCommand = new DelegateCommand(async () =>
             {
                 string extDir = App.AndroidExternalDirectory;
-                string postFilesDir = Path.Combine(extDir, "InstagramPostFiles");
+                string localFilesDir = Path.Combine(extDir, "InstagramPostFiles");
 
-                if (!Directory.Exists(postFilesDir))
-                    Directory.CreateDirectory(postFilesDir);
+                if (!Directory.Exists(localFilesDir))
+                    Directory.CreateDirectory(localFilesDir);
 
                 var doc = _parser.ParseDocument(_innerBody);
                 var imgNodes = doc.QuerySelectorAll("img");
+                var videoNodes = doc.QuerySelectorAll("video");
 
-                if (imgNodes != null && imgNodes.Count() >= 2)
+                await Task.Run(() =>
                 {
-                    await Task.Run(() =>
-                    {
-                        Status = "Downloading file...";
-                        IsDownloadingFile = true;
-                        DownloadCommand.RaiseCanExecuteChanged();
+                    Status = "Downloading file...";
+                    IsDownloadingFile = true;
+                    DownloadCommand.RaiseCanExecuteChanged();
 
+                    if (imgNodes != null && imgNodes.Count() >= 2)
+                    {
+                        _foundFileToDownload = true;
                         for (int i = 1; i <= imgNodes.Length - 1; i++)
                         {
                             var postImage = (imgNodes[i] as IHtmlImageElement);
-                            var postUrl = new Uri(postImage.Source);
-                            var mediaName = postUrl.Segments.Last();
-                            var mediaFilePath = Path.Combine(postFilesDir, mediaName);
-                           
-                            _webClient.DownloadFile(postUrl, mediaFilePath);                           
-                            Status = $"Downloaded {mediaName}";
+                            DownloadMediaElement(postImage.Source, localFilesDir);
                         }
+                    }
+                    if (videoNodes != null && imgNodes.Count() > 0)
+                    {
+                        _foundFileToDownload = true;
+                        for (int i = 0; i < videoNodes.Length; i++)
+                        {
+                            var postVideo = (videoNodes[i] as IHtmlVideoElement);
+                            DownloadMediaElement(postVideo.Source, localFilesDir);
+                        }
+                    }
+                    if (!_foundFileToDownload)
+                    {
+                        Status = "Did not found any files in this link for downloading";
+                    }
 
-                        IsDownloadingFile = false;
-                        DownloadCommand.RaiseCanExecuteChanged();
-                    });                   
-                }   
-                
+                    IsDownloadingFile = false;
+                    DownloadCommand.RaiseCanExecuteChanged();
+                });
+
             }, CanExecuteDownloadButton);
 
             EditorOnFocusedCommand = new DelegateCommand(async () =>
@@ -108,6 +119,15 @@ namespace InstagramPostDownloader.ViewModels
         private bool CanExecuteDownloadButton()
         {
             return !string.IsNullOrEmpty(PostUrl) && IsValidInstagramUrl(PostUrl) && !IsDownloadingFile;
+        }
+        private void DownloadMediaElement(string elementSource, string localFilesDir)
+        {
+            var postUrl = new Uri(elementSource);
+            var mediaName = postUrl.Segments.Last();
+            var mediaFilePath = Path.Combine(localFilesDir, mediaName);
+
+            _webClient.DownloadFile(postUrl, mediaFilePath);
+            Status = $"Downloaded {mediaName}";
         }
     }
 }
