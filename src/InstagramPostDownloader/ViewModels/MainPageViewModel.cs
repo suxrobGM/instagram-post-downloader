@@ -97,7 +97,7 @@ namespace InstagramPostDownloader.ViewModels
             {
                 string clipText = await Clipboard.GetTextAsync();
                 
-                if (IsValidInstagramUrl(clipText))
+                if (IsValidInstagramPostUrl(clipText))
                 {
                     PostUrl = clipText;
                 }
@@ -110,7 +110,7 @@ namespace InstagramPostDownloader.ViewModels
             });
         }
 
-        private bool IsValidInstagramUrl(string url)
+        private bool IsValidInstagramPostUrl(string url)
         {
             return Uri.TryCreate(url, UriKind.Absolute, out Uri instaPostUrl) &&
                     instaPostUrl.Host.Contains("instagram.com") &&
@@ -118,7 +118,7 @@ namespace InstagramPostDownloader.ViewModels
         }
         private bool CanExecuteDownloadButton()
         {
-            return !string.IsNullOrEmpty(PostUrl) && IsValidInstagramUrl(PostUrl) && !IsDownloadingFile;
+            return !string.IsNullOrEmpty(PostUrl) && IsValidInstagramPostUrl(PostUrl) && !IsDownloadingFile;
         }
         private void DownloadMediaElement(string elementSource, string localFilesDir)
         {
