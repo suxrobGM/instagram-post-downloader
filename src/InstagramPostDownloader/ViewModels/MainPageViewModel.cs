@@ -30,7 +30,13 @@ namespace InstagramPostDownloader.ViewModels
             get => _postUrl;
             set
             {
-                SetProperty(ref _postUrl, value);
+                if (Connectivity.NetworkAccess == NetworkAccess.None)
+                {
+                    Status = "Status: No internet connection";
+                    return;
+                }
+
+                SetProperty(ref _postUrl, value);                
                 DownloadCommand.RaiseCanExecuteChanged();
             }
         }
@@ -94,7 +100,7 @@ namespace InstagramPostDownloader.ViewModels
             }, CanExecuteDownloadButton);
 
             EditorOnFocusedCommand = new DelegateCommand(async () =>
-            {
+            {               
                 string clipText = await Clipboard.GetTextAsync();
                 
                 if (IsValidInstagramPostUrl(clipText))
