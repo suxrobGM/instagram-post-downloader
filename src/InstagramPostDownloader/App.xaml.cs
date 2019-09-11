@@ -1,10 +1,7 @@
-﻿using InstagramPostDownloader.Views;
-using Prism;
+﻿using Prism;
 using Prism.Ioc;
 using Prism.Unity;
-using System;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using InstagramPostDownloader.Views;
 
 namespace InstagramPostDownloader
 {
