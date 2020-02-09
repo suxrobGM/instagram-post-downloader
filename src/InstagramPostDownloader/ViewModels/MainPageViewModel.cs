@@ -1,17 +1,15 @@
-﻿using AngleSharp.Html.Dom;
-using AngleSharp.Html.Parser;
-using Prism.Commands;
-using Prism.Mvvm;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
+using Prism.Commands;
+using Prism.Mvvm;
 
 namespace InstagramPostDownloader.ViewModels
 {
