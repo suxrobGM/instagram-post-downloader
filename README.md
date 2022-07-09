@@ -1,2 +1,2 @@
 # InstagramPostDownloader
-Instagram Post Downloader is mobile application that download post images, videos from post url. Application based on Xamarin.Forms with pattern MVVM
+Instagram Post Downloader - mobile app that downloads images and videos from the Instagram post URL. Application built up with Xamarin.Forms.
